@@ -1,0 +1,60 @@
+printing ms matrix
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    0
+[2,]    0    0    0    0
+[3,]    1    0    0    0
+[4,]    0    1    0    1
+calling squaretolist(m)
+[[1]]
+[1] 1 2 3
+
+[[2]]
+[1] NA
+
+[[3]]
+[1] 1
+
+[[4]]
+[1] 2 4
+
+calling squaretothin(m)
+        
+[1,] 1 1
+[2,] 1 2
+[3,] 1 3
+[4,] 3 1
+[5,] 4 2
+[6,] 4 4
+calling thintolist(thin,nvert)
+[[1]]
+[1] 1 2 3
+
+[[2]]
+[1] NA
+
+[[3]]
+[1] 1
+
+[[4]]
+[1] 2 4
+
+calling thintosquare(thin,nvert)
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    0
+[2,]    0    0    0    0
+[3,]    1    0    0    0
+[4,]    0    1    0    1
+calling listtothin(inlist)
+        
+[1,] 1 1
+[2,] 1 2
+[3,] 1 3
+[4,] 3 1
+[5,] 4 2
+[6,] 4 4
+calling listtosquare(inlist,nvert)
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    0
+[2,]    0    0    0    0
+[3,]    1    0    0    0
+[4,]    0    1    0    1
