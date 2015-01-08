@@ -1,3 +1,8 @@
+# Authors(Alphabetical Order): 
+# Agahi, Bijan
+# Bharadwaj, Arjun
+# Peterson, Stefan
+
 ms = matrix(c(1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1), nrow=4, ncol=4) 
 #----------------------------------------
 squaretolist <- function(m)
@@ -102,25 +107,33 @@ listtosquare <- function(inlist,nvert) {
 
 cat("printing ms matrix\n")
 prmatrix(ms)
+cat("##########################\n")
+
 cat("calling squaretolist(m)\n")
 x1 <- squaretolist(ms)
 print(x1)
+cat("##########################\n")
+
 cat("calling squaretothin(m)\n")
 x2 <- squaretothin(ms)
 prmatrix(x2)
+cat("##########################\n")
 
 nvert <- 4
 cat("calling thintolist(thin,nvert)\n")
 x3 <- thintolist(x2,nvert)
 print(x3)
+cat("##########################\n")
 
 cat("calling thintosquare(thin,nvert)\n")
 x4 <- thintosquare(x2,nvert)
 prmatrix(x4)
+cat("##########################\n")
 
 cat("calling listtothin(inlist)\n")
 x5 <- listtothin(x1)
 prmatrix(x5)
+cat("##########################\n")
 
 cat("calling listtosquare(inlist,nvert)\n")
 x6 <- listtosquare(x1,nvert)
@@ -135,7 +148,7 @@ prmatrix(x6)
 # [3,]    1    0    0    0
 # [4,]    0    1    0    1
 
-################################3
+#################################
 # calling squaretolist(m)
 # [[1]]
 # [1] 1 2 3
