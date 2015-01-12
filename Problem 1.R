@@ -2,6 +2,7 @@ A = matrix(c(1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1), nrow=4, ncol=4)
 A
 #----------------------------------------
 
+
 squaretolist <- function(m)
 {
   apply(m,1,function(m) {
@@ -11,6 +12,9 @@ squaretolist <- function(m)
   })
 }
 B = squaretolist(A)
+
+
+
 #----------------------------------------
 squaretothin <- function(m) 
 {
@@ -25,6 +29,8 @@ squaretothin <- function(m)
   tempList
 }
 C = squaretothin(A)
+
+
 #----------------------------------------
 thintosquare <- function(thin,nvert) 
 {
@@ -42,6 +48,7 @@ thintolist <- function(thin,nvert)
 }
 thintolist(C,4)
 
+
 #----------------------------------------
 listtothin <- function(inlist) 
 {
@@ -57,6 +64,8 @@ listtothin <- function(inlist)
   tempMatrix
 }
 listtothin(B)
+
+
 #----------------------------------------
 listtosquare <- function(inlist,nvert) {
   tempMatrix <- matrix(0, nrow=nvert, ncol=nvert)
