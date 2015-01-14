@@ -13,10 +13,11 @@ int *numcount(int *x, int n, int m) {
 	int compareArray[m];
 	int results[n-m + 1][m+1];
 	//#pragma omp parallel for reduction(+:count) schedule(static, 1)
+	
 	for(int i = 0; i < n - m + 1; i++) {
 		for(int j = firstIter; j < lastIter; j++) {
 			for(int k = 0; k < m; k++) {
-				compareArray[k] = x[j];
+				compareArray[k] = x[j + k];
 			}
 		}
 		firstIter++;
@@ -42,7 +43,7 @@ int *numcount(int *x, int n, int m) {
 		count = 0;
 	}
 	for(int i = 0; i < n - m + 1; i++) {
-		for(int j = 0; j < m; j++) {
+		for(int j = 0; j < m + 1; j++) {
 			cout << results[i][j] << " ";
 		}
 		cout << endl;
