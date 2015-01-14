@@ -29,16 +29,19 @@ int *numcount(int *x, int n, int m) {
 		firstIter++;
 		lastIter++;
 	}
-	int result[(m + 1)* mapCount.size()];
+	int results[(m + 1)* mapCount.size()];
 	auto it = mapCount.begin();
-	
-	for(auto i = it; i != mapCount.end(); ++i) {
-		key = i->first; // Key
-		istringstream ss(key);
-		while(getline(ss,key,',')) {
-			cout << key << endl;
+	int i = 0;
+	while(i < (m+1) * mapCount.size()) {
+		for(auto j = it; j != mapCount.end(); ++i) {
+			key = j->first; // Key
+			istringstream ss(key);
+			while(getline(ss,key,',')) {
+				results[i] = atoi(key.c_str());
+				i++;
+			}
+			val = j->second; // Value
 		}
-		val = i->second; // Value
 	}
 };
 	
