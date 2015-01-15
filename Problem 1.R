@@ -90,14 +90,15 @@ listtothin <- function(inlist)
   return(tempMatrix)
 }
 # #----------------------------------------
-listtosquare <- function(inlist,nvert) {
+listtosquare <- function(inlist) {
   # Very similar to listtothin
   # Same algorithm in fact
-  tempMatrix <- matrix(0, nrow=nvert, ncol=nvert)
-  for(i in 1:nvert) {
+  total_size <- length(inlist)
+  tempMatrix <- matrix(0, nrow=total_size, ncol=total_size)
+  for(i in 1:total_size) {
     for(j in inlist[[i]]) {
       if(!is.na(j)) {
-        tempMatrix[i,j] <- 1
+        tempMatrix[i, j] <- 1
       }
     }
   }
@@ -135,8 +136,8 @@ x5 <- listtothin(x1)
 prmatrix(x5)
 cat("##########################\n")
 
-cat("calling listtosquare(inlist,nvert)\n")
-x6 <- listtosquare(x1,nvert)
+cat("calling listtosquare(inlist)\n")
+x6 <- listtosquare(x1)
 prmatrix(x6)
 
 
