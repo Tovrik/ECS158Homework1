@@ -9,6 +9,10 @@
 using namespace std;
 
 int *numcount(int *x, int n, int m) {
+	
+};
+	
+int *numcounthash(int *x, int n, int m) {
 	unordered_map <string, int> mapCount;
 	string key;
 	int val;
@@ -18,33 +22,45 @@ int *numcount(int *x, int n, int m) {
 	for(int i = 0; i < n - m + 1; i++) {
 		stringstream convert;
 		for(int j = firstIter; j < lastIter; j++) {
-			convert << x[j] << ",";
+			if(j == lastIter - 1)
+				convert << x[j];
+			else
+				convert << x[j] << ",";
 		}
 		key = convert.str();
-		//#pragma omp critical (writeToHash)
 		{
 			mapCount[key]++;
 		}
-		cout << key << mapCount[key] <<endl;
 		firstIter++;
 		lastIter++;
 	}
-	int results[(m + 1)* mapCount.size()];
-	auto it = mapCount.begin();
-	int i = 0;
-	while(i < (m+1) * mapCount.size()) {
-		for(auto j = it; j != mapCount.end(); ++i) {
-			key = j->first; // Key
-			istringstream ss(key);
-			while(getline(ss,key,',')) {
-				results[i] = atoi(key.c_str());
-				i++;
-			}
-			val = j->second; // Value
+	int *results;
+	results = new int[(m + 1)* mapCount.size()];
+	int i = 0;		
+	for(auto j = mapCount.begin(); j != mapCount.end(); ++j) {
+		key = j->first; // Key
+		// cout << j->first << endl; 
+		// cout << j->second << endl;
+		int temp = j->second;
+		istringstream ss(key);
+		while(getline(ss,key,',')) {
+			results[i] = atoi(key.c_str());
+			// cout << results[i] << endl;
+			i++;
 		}
+		results[i] = temp; // Value
+		i++;
 	}
-};
-	
+
+	//Structure for printing
+	for(int i = 0; i < (m + 1)* mapCount.size(); i++) {
+		cout << results[i] << " ";
+	}
+	cout << endl;
+
+	return results;
+}
+
 
 int main (int argc, char** argv)
 {
@@ -52,8 +68,8 @@ int main (int argc, char** argv)
 	int * y;
 	y = x;
 	int *test = numcount(y, 17, 3);
-	for(int i = 0; i < 17; i++)
-		//cout << test[i] << ", ";
+	//for(int i = 0; i < total_size; i++)
+
     	
     return 0;
 }	
