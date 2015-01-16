@@ -35,25 +35,31 @@ int *numcount(int *x, int n, int m) {
 		}
 	}
 	int *results;
-	results = new int[(m + 1)* mapCount.size()];
-	int i = 0;		
+	int mapSize = mapCount.size();
+	//declare new array of size (m + 1) * mapSize + 1 to store the results
+	results = new int[(m + 1)* mapSize + 1];
+	int i = 1;
+	//set the first element to the number of patterns found
+	results[0] = mapSize;		
 	//done in serial because it is quite fast?
+	
 	for(auto j = mapCount.begin(); j != mapCount.end(); ++j) {
 		key = j->first; // Key
 		int temp = j->second;
 		istringstream ss(key);
+		//loop that stores the integer value of the key string for the hash seperated by ','
 		while(getline(ss,key,',')) {
 			results[i] = atoi(key.c_str());
 			i++;
 		}
 		results[i] = temp; // Value
 		i++;
-
 	}
 
-	for(int i = 0; i < (m + 1)* mapCount.size(); i++) {
-		cout << results[i] << " ";
-	}
+	// for(int i = 0; i < (m + 1)* mapSize + 1; i++) {
+	// 	cout << results[i] << " ";
+	// }
+	cout << results[0];
 	cout << endl;
 	return results;
 };
