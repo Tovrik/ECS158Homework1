@@ -175,7 +175,7 @@ int main (int argc, char** argv) {
 	double starttime, endtime;
 	//init(argc, argv);
 	starttime = omp_get_wtime();
-	numcount(y, ARRAY_SIZE, 5);
+	numcount(y, ARRAY_SIZE, 1000000);
 	endtime = omp_get_wtime();
 	cout << "Elapsed time for Parallel (" << ARRAY_SIZE << "): " << endtime - starttime << endl;
 	return 0;

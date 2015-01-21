@@ -5,80 +5,159 @@
 #include <sstream>
 #include <unordered_map>
 #include <omp.h>
+#include <cstring>
 
 using namespace std;
 
+int nth, 			//number of threads
+chunk, 				//number of verticies handled by each thread 	
+globalIndex = 0;	//index used as value of globalHash 
+
+unordered_map <string, int> globalHash;
+unordered_map <int, int> t0;
+unordered_map <int, int> t1;
+unordered_map <int, int> t2;
+unordered_map <int, int> t3;
+unordered_map <int, int> t4;
+unordered_map <int, int> t5;
+unordered_map <int, int> t6;
+unordered_map <int, int> t7;
+
+unordered_map<int, int> *whichHash(int nth) {
+	switch(nth) {
+		case 0:
+			return &t0;
+			break;
+		case 1:
+			return &t1;
+			break;
+		case 2:
+			return &t2;
+			break;
+		case 3:
+			return &t3;
+			break;
+		case 4:
+			return &t4;
+			break;		
+		case 5:
+			return &t5;
+			break;
+		case 6:
+			return &t6;
+			break;
+		case 7:
+			return &t7;
+			break;		
+	}
+};
+
 int *numcount(int *x, int n, int m) {
-	unordered_map <string, int> mapCount;
-	string key;
-	int val;
-	int firstIter = 0;
-	int lastIter = m;
-	#pragma omp parallel for 
+
+	omp_set_dynamic(0);     // Explicitly disable dynamic teams
+	omp_set_num_threads(8); // Use 8 threads for all consecutive parallel regions
+	#pragma omp parallel
 	{
-		for(int i = 0; i < n - m + 1; i++) {
+		int me = omp_get_thread_num(); //current thread number
+		int myIndex ; //local hash key  or global hash value
+		unordered_map <int, int> *myHash;
+
+		#pragma omp single
+		{
+			nth = omp_get_num_threads();	//number of threads
+			chunk = n / nth; 				//floor of chunk size
+		}
+		// chunk = 100 / 8 = 12
+		// begin = 0
+		int begin = me * chunk;		//beginning of chunk
+		// end = 12
+		int end = begin + chunk;	//end of chunk 
+		myHash = whichHash(me); 	//determine which hash current thread is working on
+		
+		//beginning of parallel for loop
+		if(me == nth - 1) {
+			end = n - m + 1;
+		}
+		for(int i = begin; i < end; i++) {
 			stringstream convert;
-			for(int j = firstIter; j < lastIter; j++) {
-				if(j == lastIter - 1)
-					convert << x[j];
-				else
+			string key;
+			for(int j = i; j < i + m; j++) {
+				if(j == i + m - 1) {
+					convert << x[j];					
+				}
+				else {
 					convert << x[j] << ",";
+				}
+
 			}
 			key = convert.str();
-			#pragma omp critical (writeToHash)
+			#pragma omp critical
 			{
-				mapCount[key]++;
+				if(!globalHash.count(key)) {
+					
+						globalHash[key] = globalIndex;	//create index for local hash in global
+						myIndex = globalIndex;
+						globalIndex++;				
+				}		
+				else {
+					myIndex = globalHash[key]; 		//grab index for local hash from global
+				}
 			}
-			//move our gaze to the next chunk of size m
-			firstIter++;
-			lastIter++;
+
+			(*myHash)[myIndex]++;
+			convert.clear();
 		}
 	}
-	int *results;
-	int mapSize = mapCount.size();
-	//declare new array of size (m + 1) * mapSize + 1 to store the results
-	results = new int[(m + 1)* mapSize + 1];
+	int *results = new int[(m + 1)* globalHash.size() + 1];	
+	memset(results, 0, sizeof(int)*(m + 1)* globalHash.size() + 1);
 	int i = 1;
-	//set the first element to the number of patterns found
-	results[0] = mapSize;		
-	//done in serial because it is quite fast?
-	
-	for(auto j = mapCount.begin(); j != mapCount.end(); ++j) {
-		key = j->first; // Key
-		int temp = j->second;
-		istringstream ss(key);
+	string key = "";
+	results[0] = globalHash.size();
+	for(auto j = globalHash.begin(); j != globalHash.end(); ++j) {
+		key = j->first;				// Key
+		int temp = j->second; 		// Global value local key
+		istringstream ss(key); 		// Stringstream is for converting key back to integers
 		//loop that stores the integer value of the key string for the hash seperated by ','
 		while(getline(ss,key,',')) {
 			results[i] = atoi(key.c_str());
 			i++;
 		}
-		results[i] = temp; // Value
+
+		if(!t0.count(temp));
+		else
+			results[i] += t0[temp];
+		if(!t1.count(temp));
+		else
+			results[i] += t1[temp];
+		if(!t2.count(temp));
+		else
+			results[i] += t2[temp];
+		if(!t3.count(temp));
+		else
+			results[i] += t3[temp];
+		if(!t4.count(temp));
+		else
+			results[i] += t4[temp];
+		if(!t5.count(temp));
+		else
+			results[i] += t5[temp];
+		if(!t6.count(temp));
+		else
+			results[i] += t6[temp];
+		if(!t7.count(temp));
+		else
+			results[i] += t7[temp];
+
+		//	results[i] = t0[temp] + t1[temp] + t2[temp] +t3[temp] +t4[temp] +t5[temp] +t6[temp] +t7[temp]; // Value
 		i++;
+		ss.clear();
 	}
-
-	// for(int i = 0; i < (m + 1)* mapSize + 1; i++) {
-	// 	cout << results[i] << " ";
-	// }
-	cout << results[0];
-	cout << endl;
-	return results;
 };
-	
 
-int main (int argc, char** argv)
-{
-	int x[] = {3,4,5,12,13,4,5,12,4,5,6,3,4,5,13,4,5};
-	int * y;
-	y = x;
-	
-	double starttime, endtime;
-	init(argc, argv);
-	startime = omp_get_wtime();
-	int *test = numcount(y, 17, 3);
-	endtime = omp_get_wtime();
-	cout << "Elapsed time: " << endtime - startime << endl;
-	//for(int i = 0; i < total_size; i++)
 
-    	
-    return 0;
-}	
+ 
+
+int main (int argc, char** argv) {
+	numcount(y, ARRAY_SIZE, 100);
+	return 0;
+}
