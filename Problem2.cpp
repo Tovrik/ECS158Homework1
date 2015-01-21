@@ -1,3 +1,7 @@
+// Authors:
+// Agahi, Bijan
+// Bharadwaj, Arjun
+// Peterson, Stefan
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -158,6 +162,5 @@ int *numcount(int *x, int n, int m) {
  
 
 int main (int argc, char** argv) {
-	numcount(y, ARRAY_SIZE, 100);
 	return 0;
 }
