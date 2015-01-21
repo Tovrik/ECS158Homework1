@@ -10,7 +10,7 @@
 using namespace std;
 
 
-static const int ARRAY_SIZE = 100;
+static const int ARRAY_SIZE = 2000000;
 int nth, 			//number of threads
 chunk, 				//number of verticies handled by each thread 	
 globalIndex = 0;	//index used as value of globalHash 
@@ -74,12 +74,10 @@ int *numcount(int *x, int n, int m) {
 		int begin = me * chunk;		//beginning of chunk
 		// end = 12
 		int end = begin + chunk;	//end of chunk 
-		me = omp_get_thread_num();	//determine current thread
 		myHash = whichHash(me); 	//determine which hash current thread is working on
 		
 		//beginning of parallel for loop
-		//#pragma omp for 
-		if(end < n && me == nth - 1) {
+		if(me == nth - 1) {
 			end = n - m + 1;
 		}
 		for(int i = begin; i < end; i++) {
@@ -94,30 +92,20 @@ int *numcount(int *x, int n, int m) {
 				}
 
 			}
-
-
 			key = convert.str();
-			#pragma omp critical 
+			#pragma omp critical
 			{
-				cout << "ME = "<< me << ", BEGIN = " << begin << ", END = " << end << ", KEY = " << key << endl;
-			}
-			//cout << key << endl;
-			if(!globalHash.count(key)) {
-				#pragma omp critical
-				{
-					globalHash[key] = globalIndex;	//create index for local hash in global
-					myIndex = globalIndex;
-					globalIndex++;
-				}					
-			}		
-			else {
-				myIndex = globalHash[key]; 		//grab index for local hash from global
+				if(!globalHash.count(key)) {
+					
+						globalHash[key] = globalIndex;	//create index for local hash in global
+						myIndex = globalIndex;
+						globalIndex++;				
+				}		
+				else {
+					myIndex = globalHash[key]; 		//grab index for local hash from global
+				}
 			}
 			(*myHash)[myIndex]++;
-
-			// cout << "Thread number: " << me << endl;
-			// cout << "BEGIN =        " << begin << endl;
-			// cout << "END =          " << end << endl << endl;
 			convert.clear();
 		}
 	}
@@ -126,10 +114,8 @@ int *numcount(int *x, int n, int m) {
 	int i = 1;
 	string key = "";
 	results[0] = globalHash.size();
-	//cout << "globalHash size = " << globalHash.size() << endl;
 	for(auto j = globalHash.begin(); j != globalHash.end(); ++j) {
-		key = j->first;
-		// cout << key << endl; 			// Key
+		key = j->first;				// Key
 		int temp = j->second; 		// Global value local key
 		istringstream ss(key); 		// Stringstream is for converting key back to integers
 		//loop that stores the integer value of the key string for the hash seperated by ','
@@ -137,7 +123,6 @@ int *numcount(int *x, int n, int m) {
 			results[i] = atoi(key.c_str());
 			i++;
 		}
-		//cout << "i = " << i << endl;
 
 		if(!t0.count(temp));
 		else
@@ -168,14 +153,13 @@ int *numcount(int *x, int n, int m) {
 		i++;
 		ss.clear();
 	}
-			//4217664
 	// for(int i = 0; i < (m + 1)* globalHash.size() + 1; i++) {
-	// 	// cout << results[i] << ", " ;
+	// 	cout << results[i] << ", " ;
 	// 	if (i % (m + 1) == 0)
 	// 		cout << endl;
 	// }
-	//  cout << endl;
-
+	// cout << endl;
+	cout << results[0] << endl;
 };
 
 
@@ -184,14 +168,14 @@ int *numcount(int *x, int n, int m) {
 int main (int argc, char** argv) {
 	int x[ARRAY_SIZE];
 	for(int i = 0; i < ARRAY_SIZE; i++)
-		x[i] = rand()%5+1;
+		x[i] = rand()%100+1;
 	//int x[] = {3,4,5,12,13,4,5,12,4,5,6,3,4,5,13,4,5};
 	int * y;
 	y = x;
 	double starttime, endtime;
 	//init(argc, argv);
 	starttime = omp_get_wtime();
-	numcount(y, ARRAY_SIZE, 3);
+	numcount(y, ARRAY_SIZE, 5);
 	endtime = omp_get_wtime();
 	cout << "Elapsed time for Parallel (" << ARRAY_SIZE << "): " << endtime - starttime << endl;
 	return 0;
