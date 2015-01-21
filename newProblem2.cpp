@@ -5,11 +5,12 @@
 #include <sstream>
 #include <unordered_map>
 #include <omp.h>
+#include <cstring>
 
 using namespace std;
 
 
-static const int ARRAY_SIZE = 1000;
+static const int ARRAY_SIZE = 100;
 int nth, 			//number of threads
 chunk, 				//number of verticies handled by each thread 	
 globalIndex = 0;	//index used as value of globalHash 
@@ -54,7 +55,7 @@ unordered_map<int, int> *whichHash(int nth) {
 };
 
 int *numcount(int *x, int n, int m) {
-	int *results = new int[(m + 1)* globalHash.size() + 1];
+
 	omp_set_dynamic(0);     // Explicitly disable dynamic teams
 	omp_set_num_threads(8); // Use 8 threads for all consecutive parallel regions
 	#pragma omp parallel
@@ -66,9 +67,12 @@ int *numcount(int *x, int n, int m) {
 		#pragma omp single
 		{
 			nth = omp_get_num_threads();	//number of threads
-			chunk = n / nth; 				//chunk size
+			chunk = n / nth; 				//floor of chunk size
 		}
+		// chunk = 100 / 8 = 12
+		// begin = 0
 		int begin = me * chunk;		//beginning of chunk
+		// end = 12
 		int end = begin + chunk;	//end of chunk 
 		me = omp_get_thread_num();	//determine current thread
 		myHash = whichHash(me); 	//determine which hash current thread is working on
@@ -90,7 +94,14 @@ int *numcount(int *x, int n, int m) {
 				}
 
 			}
+
+
 			key = convert.str();
+			#pragma omp critical 
+			{
+				cout << "ME = "<< me << ", BEGIN = " << begin << ", END = " << end << ", KEY = " << key << endl;
+			}
+			//cout << key << endl;
 			if(!globalHash.count(key)) {
 				#pragma omp critical
 				{
@@ -107,14 +118,18 @@ int *numcount(int *x, int n, int m) {
 			// cout << "Thread number: " << me << endl;
 			// cout << "BEGIN =        " << begin << endl;
 			// cout << "END =          " << end << endl << endl;
-
+			convert.clear();
 		}
-	}	
+	}
+	int *results = new int[(m + 1)* globalHash.size() + 1];	
+	memset(results, 0, sizeof(int)*(m + 1)* globalHash.size() + 1);
 	int i = 1;
 	string key = "";
 	results[0] = globalHash.size();
+	//cout << "globalHash size = " << globalHash.size() << endl;
 	for(auto j = globalHash.begin(); j != globalHash.end(); ++j) {
-		key = j->first; 			// Key
+		key = j->first;
+		// cout << key << endl; 			// Key
 		int temp = j->second; 		// Global value local key
 		istringstream ss(key); 		// Stringstream is for converting key back to integers
 		//loop that stores the integer value of the key string for the hash seperated by ','
@@ -122,16 +137,44 @@ int *numcount(int *x, int n, int m) {
 			results[i] = atoi(key.c_str());
 			i++;
 		}
-		results[i] = t0[temp] + t1[temp] + t2[temp] +t3[temp] +t4[temp] +t5[temp] +t6[temp] +t7[temp]; // Value
-		i++;
-	}
+		//cout << "i = " << i << endl;
 
+		if(!t0.count(temp));
+		else
+			results[i] += t0[temp];
+		if(!t1.count(temp));
+		else
+			results[i] += t1[temp];
+		if(!t2.count(temp));
+		else
+			results[i] += t2[temp];
+		if(!t3.count(temp));
+		else
+			results[i] += t3[temp];
+		if(!t4.count(temp));
+		else
+			results[i] += t4[temp];
+		if(!t5.count(temp));
+		else
+			results[i] += t5[temp];
+		if(!t6.count(temp));
+		else
+			results[i] += t6[temp];
+		if(!t7.count(temp));
+		else
+			results[i] += t7[temp];
+
+		//	results[i] = t0[temp] + t1[temp] + t2[temp] +t3[temp] +t4[temp] +t5[temp] +t6[temp] +t7[temp]; // Value
+		i++;
+		ss.clear();
+	}
+			//4217664
 	// for(int i = 0; i < (m + 1)* globalHash.size() + 1; i++) {
-	// 	cout << results[i] << ", " ;
-	// 	if (i % 4 == 0)
+	// 	// cout << results[i] << ", " ;
+	// 	if (i % (m + 1) == 0)
 	// 		cout << endl;
 	// }
-	// cout << endl;
+	//  cout << endl;
 
 };
 
@@ -141,11 +184,15 @@ int *numcount(int *x, int n, int m) {
 int main (int argc, char** argv) {
 	int x[ARRAY_SIZE];
 	for(int i = 0; i < ARRAY_SIZE; i++)
-		x[i] = rand()%100+1;
-	// int x[] = {3,4,5,12,13,4,5,12,4,5,6,3,4,5,13,4,5};
+		x[i] = rand()%5+1;
+	//int x[] = {3,4,5,12,13,4,5,12,4,5,6,3,4,5,13,4,5};
 	int * y;
 	y = x;
-
+	double starttime, endtime;
+	//init(argc, argv);
+	starttime = omp_get_wtime();
 	numcount(y, ARRAY_SIZE, 3);
+	endtime = omp_get_wtime();
+	cout << "Elapsed time for Parallel (" << ARRAY_SIZE << "): " << endtime - starttime << endl;
 	return 0;
 }
