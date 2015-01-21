@@ -10,12 +10,23 @@ using namespace std;
 
 
 static const int ARRAY_SIZE = 100;
-int nth, 	//number of threads
-chunk; 		//number of verticies handled by each thread 	
+int nth, 			//number of threads
+chunk, 				//number of verticies handled by each thread 	
+globalIndex = 0;	//index used as value of globalHash 
+
+unordered_map <string, int> globalHash;
+unordered_map <int, int> t0;
+unordered_map <int, int> t1;
+unordered_map <int, int> t2;
+unordered_map <int, int> t3;
+unordered_map <int, int> t4;
+unordered_map <int, int> t5;
+unordered_map <int, int> t6;
+unordered_map <int, int> t7;
 
 int *numcount(int *x, int n, int m) {
-	// omp_set_dynamic(0);     // Explicitly disable dynamic teams
-	// omp_set_num_threads(8); // Use 8 threads for all consecutive parallel regions
+	omp_set_dynamic(0);     // Explicitly disable dynamic teams
+	omp_set_num_threads(8); // Use 8 threads for all consecutive parallel regions
 	#pragma omp parallel
 	{
 		int me = omp_get_thread_num(); //current thread number
@@ -27,16 +38,34 @@ int *numcount(int *x, int n, int m) {
 		}
 		int begin = me * chunk;
 		int end = begin + chunk;
-					me = omp_get_thread_num();
-
+		me = omp_get_thread_num();
+		//beginning of parallel for loop
 		#pragma omp for 
 		for(int i = begin; i < end; i++) {
-			cout << "Thread number: " << me << endl;
-			cout << "BEGIN =        " << begin << endl;
-			cout << "END =          " << end << endl << endl;
+			stringstream convert;
+			for(int j = i; j < i + m; j++) {
+				if(j == i + m - 1) {
+					convert << x[j];					
+				}
+				else {
+					convert << x[j] << ",";
+				}
+
+			}
+			key = convert.str();
+			if(!globalHash.count(key)) {
+				globalHash[key] = globalIndex;
+				globalIndex++;
+			}
+			else {
+
+			}
+
+			// cout << "Thread number: " << me << endl;
+			// cout << "BEGIN =        " << begin << endl;
+			// cout << "END =          " << end << endl << endl;
 
 		}
-		// cout << "thread number: "<< me << endl;
 	}	
 };
 
